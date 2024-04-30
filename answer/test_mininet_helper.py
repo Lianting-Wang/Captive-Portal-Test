@@ -60,7 +60,7 @@ def configure_host_network(host):
     host.cmd('iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 80')
     host.cmd('iptables -t nat -A PREROUTING -p tcp --dport 443 -j REDIRECT --to-port 443')
 
-def customTree(test_all):
+def customTree(test_all, mod=0):
     "Create a network and add NAT to provide Internet access."
 
     net = Mininet(controller=RemoteController, switch=OVSSwitch)
@@ -102,8 +102,18 @@ def customTree(test_all):
     configure_host_network(host)
 
     info('*** Start host service\n')
-    host.cmd('python dns_server.py 1>/dev/null 2>&1 &')
-    host.cmd('python web_server.py 1>/dev/null 2>&1 &')
+    dns_address = 'answer/'
+    web_address = 'answer/'
+    if mod == 3:
+        dns_address = ''
+    if mod == 4:
+        web_address = ''
+    if mod == 6:
+        dns_address = ''
+        web_address = ''
+    else:
+        host.cmd(f'python {dns_address}dns_server.py 1>/dev/null 2>&1 &')
+        host.cmd(f'python {web_address}web_server.py 1>/dev/null 2>&1 &')
 
     info('Waiting for initialization...\n')
     time.sleep(1)

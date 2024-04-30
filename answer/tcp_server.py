@@ -1,6 +1,7 @@
 import json
 import atexit
 import socket
+import logging
 import threading
 from datetime import datetime, timedelta
 import configparser
@@ -11,6 +12,10 @@ TCP_server_ip = config['DEFAULT']['TCP_server_ip']
 TCP_server_port = int(config['DEFAULT']['TCP_server_port'])
 captive_portal_mac = config['DEFAULT']['captive_portal_mac']
 internet_mac = config['DEFAULT']['internet_mac']
+server_log = config['DEFAULT']['server_log']
+
+# Setup logging
+logging.basicConfig(filename=server_log, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 valid_time = timedelta(days=1)
 
@@ -25,18 +30,18 @@ class MACSet:
     def remove_mac(self, mac):
         if mac in self.approved_macs:
             del self.approved_macs[mac]
-            print(f"Mac {mac} removed.")
+            logging.info(f"Mac {mac} removed.")
             return True
         else:
-            print(f"Mac {mac} not found.")
+            logging.info(f"Mac {mac} not found.")
             return False
 
     def check_mac(self, mac):
         if mac in self.approved_macs:
-            print(f"Mac {mac} is approved, added on {self.approved_macs[mac]}. {datetime.now()-self.approved_macs[mac] < valid_time}")
+            logging.info(f"Mac {mac} is approved, added on {self.approved_macs[mac]}. {datetime.now()-self.approved_macs[mac] < valid_time}")
             return True
         else:
-            print(f"Mac {mac} is not approved.")
+            logging.info(f"Mac {mac} is not approved.")
             return False
 
 class Server:
@@ -48,9 +53,10 @@ class Server:
         self.MACSet = MACSet()
         self.server_socket = None
         self.lock = threading.Lock()
+        self.stop_event = threading.Event()
     
     def handle_client(self, conn, addr):
-        print('Connected by', addr)
+        logging.info(f'Connected by: {addr}')
         try:
             while True:
                 data = conn.recv(1024).decode()
@@ -58,7 +64,7 @@ class Server:
                     break
                 try:
                     request = json.loads(data)
-                    print(f"Received message: {request}")
+                    logging.info(f"Received message: {request}")
                     response = self.handle_request(request)
                     conn.sendall(json.dumps(response).encode())
                 except json.JSONDecodeError:
@@ -73,8 +79,8 @@ class Server:
             self.server_socket = s
             s.bind((self.host, self.port))
             s.listen()
-            print(f"Server listening on {self.host}:{self.port}")
-            while True:  # Stay open forever
+            logging.info(f"Server listening on {self.host}:{self.port}")
+            while not self.stop_event.is_set():  # Stay open forever
                 conn, addr = s.accept()
                 client_thread = threading.Thread(target=self.handle_client, args=(conn, addr))
                 client_thread.start()
@@ -125,10 +131,12 @@ class Server:
 
     def stop_server(self):
         """Stops the TCP server."""
-        print("Stopping server...")
+        logging.info("Stopping server...")
+        self.stop_event.set()
         if self.server_socket:
             self.server_socket.close()
 
-server = Server()
-server.run_tcp_server()
-atexit.register(server.stop_server())
+if __name__ == '__main__':
+    server = Server()
+    server.run_tcp_server()
+    atexit.register(server.stop_server())

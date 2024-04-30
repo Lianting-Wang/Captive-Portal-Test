@@ -5,7 +5,7 @@ from answer.test_mininet_helper import test_mininet_helper
 
 # Load configuration settings from a .ini file
 config = configparser.ConfigParser()
-config.read('../config.ini')
+config.read('config.ini')
 # Retrieve the captive portal host setting from the config file
 ssl_enable = config['DEFAULT']['ssl_enable']
 captive_portal_host = config['DEFAULT']['captive_portal_host']
@@ -211,8 +211,8 @@ def test_all(host, internet, h1, h2):
     # Print summary of test results indicating the number of passed tests
     show_results(f, f'Summary: {len([x for x in test_result if x])} / {len(test_result)} Test Success!')
 
-def test_mininet():
-    test_mininet_helper(test_all)
+def test_mininet(mod=0):
+    test_mininet_helper(test_all, mod)
 
 if __name__ == '__main__':
-    test_mininet()
+    test_mininet(0)
