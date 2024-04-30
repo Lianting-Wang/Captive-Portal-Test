@@ -3,7 +3,6 @@ import json
 import atexit
 import logging
 import threading
-import socketserver
 import configparser
 from urllib.parse import parse_qs
 from http.server import HTTPServer, SimpleHTTPRequestHandler
