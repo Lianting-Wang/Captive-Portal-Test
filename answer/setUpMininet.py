@@ -9,6 +9,7 @@ from mininet.link import Intf
 
 config = configparser.ConfigParser()
 config.read('/home/mininet/Captive-Portal/config.ini')
+DNS_Server = config['DEFAULT']['DNS_Server']
 internet_ip = config['DEFAULT']['internet_ip']
 internet_mac = config['DEFAULT']['internet_mac']
 captive_portal_ip = config['DEFAULT']['captive_portal_ip']
@@ -51,7 +52,7 @@ bash_script_name = 'gateway_switch.sh'
 
 def configure_network(host):
     host.cmd('sudo systemctl disable --now systemd-resolved.service')
-    host.cmd(f'echo -e "nameserver 127.0.0.53\nnameserver 8.8.8.8" > /etc/resolv.conf')
+    host.cmd(f'echo -e "nameserver 127.0.0.53\nnameserver {DNS_Server}" > /etc/resolv.conf')
     host.cmd(f'sudo ./{bash_script_name} &> /dev/null &')
     host.cmd('export XAUTHORITY=/root/.Xauthority')
 
