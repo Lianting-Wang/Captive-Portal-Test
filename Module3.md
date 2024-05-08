@@ -1,9 +1,9 @@
-### Guide for DNS Server Implementation
+## Guide for DNS Server Implementation
 
 **Objective:**
 The goal of this assignment is to create a DNS interceptor that captures DNS queries and forwards them to a specified DNS server for resolution, then returns the response to the client. This helps students understand DNS protocols and the process of intercepting and handling network traffic.
 
-#### `forward_dns_query` Function
+### `forward_dns_query` Function
 1. **Description:**
    - This function takes in raw DNS query data, forwards it to a specified DNS server, and returns the response.
 
@@ -14,7 +14,7 @@ The goal of this assignment is to create a DNS interceptor that captures DNS que
    - **Receive Response:** Use `sock.recvfrom` to receive the response data.
    - **Return Response:** Return the response data or `None` if the request times out.
 
-##### `forward_dns_query` Detailed Implementation Steps
+#### `forward_dns_query` Detailed Implementation Steps
 
 1. **Function Parameters:**
    - **data:** The raw DNS query data to be forwarded.
@@ -87,7 +87,7 @@ The goal of this assignment is to create a DNS interceptor that captures DNS que
        ...
    ```
 
-#### `dns_interceptor` Function
+### `dns_interceptor` Function
 1. **Description:**
    - This function intercepts DNS queries from clients, forwards them to the specified DNS server using `forward_dns_query`, and then returns the DNS response to the client.
 
@@ -98,7 +98,7 @@ The goal of this assignment is to create a DNS interceptor that captures DNS que
    - **Construct Response:** If a response is received, construct a spoofed response packet with the appropriate fields.
    - **Send Response:** Use `send` to send the response back to the original client.
 
-##### `dns_interceptor` Detailed Implementation Steps
+#### `dns_interceptor` Detailed Implementation Steps
 
 1. **Check for DNS Query Layer:**
    - **Description:** The first step is to check if the incoming packet contains a DNS query (`DNSQR` layer). This ensures that only DNS queries are processed.
@@ -167,7 +167,7 @@ The goal of this assignment is to create a DNS interceptor that captures DNS que
      ```
    - **Explanation:** This message can be customized to include the intended DNS server's IP or any other useful information.
 
-#### Packet Sniffing
+### Packet Sniffing
 - Use the `sniff` function to capture UDP packets on port 53 and pass each packet to `dns_interceptor`.
 - Consider limiting sniffing to specific interfaces for controlled environments.
 - **Code Example:** 
