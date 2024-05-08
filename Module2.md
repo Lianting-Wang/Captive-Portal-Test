@@ -174,7 +174,7 @@ Before modifying the switch code, it's crucial to understand the requirements:
        - If validated, forward traffic to the internet.
        - Otherwise, forward traffic to the captive portal.
 
-     ![Flowchart of Conditional Switch](./Conditional%20Switch.svg)
+     ![Flowchart of Conditional Switch](https://github.com/Lianting-Wang/Captive-Portal-Test/raw/main/diagrams/Conditional%20Switch.svg)
 
 4. **Define Actions for Each Condition**
    - Translate the conditions into logical actions:
