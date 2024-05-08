@@ -55,7 +55,7 @@ const recommendedModules = [0];
 // Handler for displaying the final recommendations.
 function showGuideline() {
   const container = document.getElementById('questionContainer');
-  const links = recommendedModules.map(num => `<a href="module${num}.md" download="module${num}.md">${questions[`module${num}`].detail}</a>`);
+  const links = recommendedModules.map(num => `<a href="Module${num}.md" download="Module${num}.md">${questions[`module${num}`].detail}</a>`);
   if (links.length !== 0) {
       container.innerHTML = `<p>Recommended Modules:<br>${links.join('<br>')}</p>`;
       const downloadAllButton = document.createElement('button');
@@ -73,7 +73,7 @@ async function downloadAll(links) {
 
   // Use Promise.all to handle all fetch requests in parallel
   const filesContent = await Promise.all(recommendedModules.map(num => 
-      fetch(`./module${num}.md`).then(response => response.text())  // Fetch text content from each URL
+      fetch(`./Module${num}.md`).then(response => response.text())  // Fetch text content from each URL
   ));
 
   // Concatenate all file contents
