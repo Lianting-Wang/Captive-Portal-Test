@@ -40,6 +40,7 @@ const questions = {
       no: "finished"
   },
   // Define modules with numbers and details.
+  module0: { num: 0, detail: "Guide for Setup Captive Portal Projectt" },
   module1: { num: 1, detail: "Module 1: TCP Server/Client" },
   module2: { num: 2, detail: "Module 2: Switch Implementation" },
   module3: { num: 3, detail: "Module 3: DNS Server Implementation" },
@@ -55,12 +56,15 @@ const recommendedModules = [0];
 function showGuideline() {
   const container = document.getElementById('questionContainer');
   const links = recommendedModules.map(num => `<a href="module$${num}.md" download="module$${num}.md">${questions[`module${num}`].detail}</a>`);
-  container.innerHTML = `<p>Recommended Modules:<br>${links.join('<br>')}</p>`;
-
-  const downloadAllButton = document.createElement('button');
-  downloadAllButton.textContent = 'Download All';
-  downloadAllButton.onclick = function() { downloadAll(links); };
-  container.appendChild(downloadAllButton);
+  if (links.length !== 0) {
+      container.innerHTML = `<p>Recommended Modules:<br>${links.join('<br>')}</p>`;
+      const downloadAllButton = document.createElement('button');
+      downloadAllButton.textContent = 'Download All';
+      downloadAllButton.onclick = function() { downloadAll(links); };
+      container.appendChild(downloadAllButton);
+  } else {
+      container.innerHTML = '<p>Unfortunately, this tutorial is not for you at the moment</p>';
+  }
 }
 
 // Define downloadAll function to concatenate and download content from all provided links
