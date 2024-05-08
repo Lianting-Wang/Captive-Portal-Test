@@ -55,7 +55,7 @@ const recommendedModules = [0];
 // Handler for displaying the final recommendations.
 function showGuideline() {
   const container = document.getElementById('questionContainer');
-  const links = recommendedModules.map(num => `<a href="Module${num}.md" download="Module${num}.md">${questions[`module${num}`].detail}</a>`);
+  const links = recommendedModules.map(num => `<a href="./Module${num}.md" download="Module${num}.md">${questions[`module${num}`].detail}</a>`);
   if (links.length !== 0) {
       container.innerHTML = `<p>Recommended Modules:<br>${links.join('<br>')}</p>`;
       const downloadAllButton = document.createElement('button');
