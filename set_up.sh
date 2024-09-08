@@ -25,3 +25,6 @@ if [ -d "$extracted_dir" ]; then
   # Remove the directory and its contents
   rm -rf "$extracted_dir"
 fi
+
+# Add executable permissions to all .sh files
+find . -type f -name "*.sh" -exec chmod +x {} \;
