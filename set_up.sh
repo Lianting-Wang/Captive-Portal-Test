@@ -17,8 +17,11 @@ rm Captive-Portal.zip
 # Get the name of the extracted directory (assuming the zip contains only one top-level directory)
 extracted_dir=$(find . -mindepth 1 -maxdepth 1 -type d)
 
-# Move files to the current directory and remove the temporary directory
+# Move files including hidden files to the current directory and forcefully remove the temporary directory
 if [ -d "$extracted_dir" ]; then
-  mv "$extracted_dir"/* .
-  rmdir "$extracted_dir"
+  # Move regular files and directories
+  mv "$extracted_dir"/* "$extracted_dir"/.* . 2>/dev/null
+  
+  # Remove the directory and its contents
+  rm -rf "$extracted_dir"
 fi
