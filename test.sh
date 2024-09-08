@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Function to read the IP and port from config.ini for TCP server
+# Read the IP and port from config.ini for TCP server
 function get_port_info() {
     TCP_SERVER_PORT=$(grep "TCP_server_port" config.ini | cut -d'=' -f2 | tr -d ' ')
 }
@@ -18,17 +18,22 @@ function copy_files() {
     cp "$tcp_source_file" "$destination_directory"
 }
 
+function initialization() {
+    get_port_info
+    sudo pkill -f pox.py > /dev/null 2>&1  # Stop POX process
+    sudo fuser -k "$TCP_SERVER_PORT/tcp" > /dev/null 2>&1  # Kill processes using the TCP port
+}
+
+initialization
+
 # Cleanup function to stop all processes when interrupted
 function cleanup() {
     echo "Interrupt signal received, stopping processes..."
-    get_port_info
-    fuser -k "$TCP_SERVER_PORT/tcp" > /dev/null 2>&1  # Kill processes using the TCP port
-    sudo pkill -f pox.py > /dev/null 2>&1  # Stop POX process
+    initialization
     sleep 1  # Ensure there is enough time to kill the process
-    kill $python_pid > /dev/null 2>&1  # Stop the test Python process
-    sleep 1  # Ensure there is enough time to kill the process
-    echo "Initial Mininet cleanup..."
-    mn -c > /dev/null 2>&1
+    sudo kill $python_mn_pid > /dev/null 2>&1  # Stop the test Python process
+    echo "Mininet cleanup..."
+    sudo mn -c > /dev/null 2>&1
     echo "All processes have been stopped, and Mininet cleanup is successful."
     exit 0
 }
@@ -95,22 +100,22 @@ else
 fi
 
 # --- Start the TCP server if selected ---
-SCRIPT_PATH="answer/tcp_server.py"
-POX_TCP_SOURCE_FILE='pox_answer/tcp_client_answer.py'
+SCRIPT_PATH="/home/mininet/Captive-Portal/answer/tcp_server.pyc"
+POX_TCP_SOURCE_FILE='/home/mininet/Captive-Portal/pox_answer/tcp_client_answer.pyc'
 if [ "$test_tcp" = true ]; then
-  SCRIPT_PATH="start_code/tcp_server.py"
-  POX_TCP_SOURCE_FILE='start_code/tcp_client.py'
+  SCRIPT_PATH="/home/mininet/Captive-Portal/start_code/tcp_server.py"
+  POX_TCP_SOURCE_FILE='/home/mininet/Captive-Portal/start_code/tcp_client.py'
 fi
 echo "Running TCP server Python script: $SCRIPT_PATH"
-python "$SCRIPT_PATH" > /dev/null 2>&1 &
+python "$SCRIPT_PATH" &
 
 sleep 1  # Ensure there is enough time to start the process
 
 # --- Start POX process if selected ---
-POX_SOURCE_FILE='pox_answer/condition_switch_answer.py'
+POX_SOURCE_FILE='/home/mininet/Captive-Portal/pox_answer/condition_switch_answer.pyc'
 SCRIPT_COMMAND=condition_switch_answer
 if [ "$test_pox" = true ]; then
-  POX_SOURCE_FILE='start_code/switch.py'
+  POX_SOURCE_FILE='/home/mininet/Captive-Portal/start_code/switch.py'
   SCRIPT_COMMAND=switch
 fi
 DESTINATION_DIRECTORY='/home/mininet/pox/ext'
@@ -120,23 +125,23 @@ copy_files "$POX_SOURCE_FILE" "$POX_TCP_SOURCE_FILE" "$DESTINATION_DIRECTORY"
 
 # Run the POX command
 echo "Running POX: sudo /home/mininet/pox/pox.py $SCRIPT_COMMAND"
-/home/mininet/pox/pox.py "$SCRIPT_COMMAND" > /dev/null 2>&1 &
+sudo /home/mininet/pox/pox.py "$SCRIPT_COMMAND" &
 
-sleep 10  # Ensure there is enough time to start the process
+sleep 5  # Ensure there is enough time to start the process
 
 # --- Display a "Testing..." message ---
 echo -e "\nTesting...\nThis may take some time.\n"
 
 # Run the test Python script with the chosen mod value and suppress the output, and capture the process ID
-python test_mininet.py --mod $mod > /dev/null 2>&1 &
-python_pid=$!
+python /home/mininet/Captive-Portal/test_mininet.py --mod $mod &
+python_mn_pid=$!
 
 # Wait for the Python test process to finish
-wait $python_pid
+wait $python_mn_pid
 
 # Display the results
 echo "Test Results:"
-cat mininet_grade.txt | grep -E 'Initial Connectivity Test|Web Connectivity Test|Failed Certification Test|Succeed Certification Test|Second Connectivity Test|Final Connectivity Test|Summary'
+cat /home/mininet/Captive-Portal/mininet_grade.txt | grep -E 'Initial Connectivity Test|Web Connectivity Test|Failed Certification Test|Succeed Certification Test|Second Connectivity Test|Final Connectivity Test|Summary'
 
 # Notify user that more detailed test results can be found in mininet_grade.txt
 echo -e "\nTest completed. You can find the more detailed test results in the mininet_grade.txt file."

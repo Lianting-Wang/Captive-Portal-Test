@@ -25,12 +25,12 @@ function cleanup() {
 trap cleanup SIGINT
 
 # Handle command-line argument to select the source files
-pox_source_file='./start_code/switch.py'
-pox_tcp_source_file='./start_code/tcp_client.py'
+pox_source_file='/home/mininet/Captive-Portal/start_code/switch.py'
+pox_tcp_source_file='/home/mininet/Captive-Portal/start_code/tcp_client.py'
 SCRIPT_COMMAND=switch
 if [ "$1" == "answer" ]; then
-    pox_source_file='./pox_answer/condition_switch_answer.py'
-    pox_tcp_source_file='./pox_answer/tcp_client_answer.py'
+    pox_source_file='/home/mininet/Captive-Portal/pox_answer/condition_switch_answer.pyc'
+    pox_tcp_source_file='/home/mininet/Captive-Portal/pox_answer/tcp_client_answer.pyc'
     SCRIPT_COMMAND=condition_switch_answer
 fi
 
