@@ -102,18 +102,18 @@ def customTree(test_all, mod=0):
     configure_host_network(host)
 
     info('*** Start host service\n')
-    dns_address = 'answer/'
-    web_address = 'answer/'
+    dns_address = 'answer/dns_server.py'
+    web_address = 'answer/web_server.py'
     if mod == 3:
-        dns_address = ''
+        dns_address = 'start_code/dns_server.py'
     if mod == 4:
-        web_address = ''
+        web_address = 'start_code/web_server.py'
     if mod == 6:
-        dns_address = ''
-        web_address = ''
+        dns_address = 'start_code/dns_server.py'
+        web_address = 'start_code/web_server.py'
     else:
-        host.cmd(f'python {dns_address}dns_server.py 1>/dev/null 2>&1 &')
-        host.cmd(f'python {web_address}web_server.py 1>/dev/null 2>&1 &')
+        host.cmd(f'python {dns_address} 1>/dev/null 2>&1 &')
+        host.cmd(f'python {web_address} 1>/dev/null 2>&1 &')
 
     info('Waiting for initialization...\n')
     time.sleep(1)
@@ -127,7 +127,7 @@ def customTree(test_all, mod=0):
     info('*** Stopping network\n')
     net.stop()
 
-def test_mininet_helper(test_all):
+def test_mininet_helper(test_all, mod):
     # Create a bash script to switch gateways
     with open(bash_script_name, "w") as file:
         file.write(bash_script)
@@ -135,4 +135,4 @@ def test_mininet_helper(test_all):
     os.chmod(bash_script_name, 0o755)
 
     setLogLevel('info')
-    customTree(test_all)
+    customTree(test_all, mod)

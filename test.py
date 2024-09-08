@@ -2,7 +2,7 @@ import time
 import shutil
 import threading
 import subprocess
-from answer.server import Server
+# from answer.server import Server
 from test_mininet import test_mininet
 
 # server = Server()

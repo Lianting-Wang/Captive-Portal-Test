@@ -1,5 +1,6 @@
 import re
 import json
+import argparse
 import configparser
 from answer.test_mininet_helper import test_mininet_helper
 
@@ -212,7 +213,17 @@ def test_all(host, internet, h1, h2):
     show_results(f, f'Summary: {len([x for x in test_result if x])} / {len(test_result)} Test Success!')
 
 def test_mininet(mod=0):
+    print(f"Running test_mininet with mod = {mod}")
     test_mininet_helper(test_all, mod)
 
 if __name__ == '__main__':
-    test_mininet(0)
+    # Set up argument parser
+    parser = argparse.ArgumentParser(description="Run Mininet test with a specific mod value.")
+    parser.add_argument(
+        '--mod', type=int, default=0,
+        help="Mod value: 0 if you don't want to test your own DNS/Web server files, 3 for testing your own DNS server file, 4 for testing your own Web server file, 5 for testing both your own DNS and Web server files"
+    )
+    args = parser.parse_args()
+    
+    # Run the function with the passed mod value
+    test_mininet(args.mod)
